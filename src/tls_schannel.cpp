@@ -26,7 +26,7 @@ struct _tls {
     xmpp_conn_t *conn;
     sock_t sock;
 
-    HANDLE hsec32;
+    HMODULE hsec32;
     SecurityFunctionTable *sft;
     CredHandle hcred;
     SecPkgInfo *spi;
@@ -50,6 +50,8 @@ struct _tls {
 
     SECURITY_STATUS lasterror;
 };
+
+using InitSecurityInterface_t = PSecurityFunctionTable (*)(void);
 
 void tls_initialize(void)
 {
@@ -90,18 +92,6 @@ tls_t *tls_new(xmpp_conn_t *conn)
     SecPkgCred_CipherStrengths spc_cs;
     SecPkgCred_SupportedProtocols spc_sp;
 
-    OSVERSIONINFO osvi;
-
-    memset(&osvi, 0, sizeof(osvi));
-    osvi.dwOSVersionInfoSize = sizeof(osvi);
-
-    GetVersionEx(&osvi);
-
-    /* no TLS support on win9x/me, despite what anyone says */
-    if (osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS) {
-        return NULL;
-    }
-
     tls = xmpp_alloc<tls_t>(ctx, sizeof(*tls));
 
     if (!tls) {
@@ -118,8 +108,7 @@ tls_t *tls_new(xmpp_conn_t *conn)
         return NULL;
     }
 
-    if (!(pInitSecurityInterface =
-              (void *)GetProcAddress(tls->hsec32, "InitSecurityInterfaceA"))) {
+    if (!(pInitSecurityInterface = (InitSecurityInterface_t)GetProcAddress(tls->hsec32, "InitSecurityInterfaceA"))) {
         tls_free(tls);
         return NULL;
     }
@@ -214,7 +203,7 @@ void tls_free(tls_t *tls)
     tls->sft = NULL;
 
     if (tls->hsec32) {
-        FreeLibrary(tls->hsec32);
+        FreeLibrary((HMODULE)tls->hsec32);
         tls->hsec32 = NULL;
     }
 
@@ -278,7 +267,7 @@ int tls_start(tls_t *tls)
         &(tls->hcred), NULL, name, ctxtreq, 0, 0, NULL, 0, &(tls->hctxt),
         &sbdout, &ctxtattr, NULL);
 
-    unsigned char *p = sbin[0].pvBuffer;
+    unsigned char *p = (uint8_t*)sbin[0].pvBuffer;
     int len = 0;
 
     while (ret == SEC_I_CONTINUE_NEEDED ||
@@ -288,11 +277,11 @@ int tls_start(tls_t *tls)
 
         if (ret != SEC_E_INCOMPLETE_MESSAGE) {
             len = 0;
-            p = sbin[0].pvBuffer;
+            p = (uint8_t*)sbin[0].pvBuffer;
         }
 
         if (sbdout.pBuffers[0].cbBuffer) {
-            unsigned char *writebuff = sbdout.pBuffers[0].pvBuffer;
+            unsigned char *writebuff = (uint8_t*)sbdout.pBuffers[0].pvBuffer;
             unsigned int writelen = sbdout.pBuffers[0].cbBuffer;
 
             sent = sock_write(tls->sock, writebuff, writelen);
@@ -354,7 +343,7 @@ int tls_start(tls_t *tls)
 
     if (ret == SEC_E_OK) {
         if (sbdout.pBuffers[0].cbBuffer) {
-            unsigned char *writebuff = sbdout.pBuffers[0].pvBuffer;
+            unsigned char *writebuff = (uint8_t*)sbdout.pBuffers[0].pvBuffer;
             unsigned int writelen = sbdout.pBuffers[0].cbBuffer;
             sent = sock_write(tls->sock, writebuff, writelen);
             if (sent == -1) {
@@ -452,7 +441,7 @@ int tls_read(tls_t *tls, void *buff, size_t len)
             tls->readybufferpos += bytes;
             return bytes;
         } else {
-            unsigned char *newbuff = buff;
+            unsigned char *newbuff = (uint8_t*)buff;
             int read;
             tls->readybufferpos += bytes;
             newbuff += bytes;
@@ -583,7 +572,7 @@ int tls_write(tls_t *tls, const void *buff, size_t len)
 {
     SecBufferDesc sbdenc;
     SecBuffer sbenc[4];
-    const unsigned char *p = buff;
+    const unsigned char *p = (uint8_t*)buff;
     int sent = 0, ret, remain = len;
 
     ret = tls_clear_pending_write(tls);

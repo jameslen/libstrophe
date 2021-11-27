@@ -38,6 +38,19 @@
 #include "util.h" /* xmpp_min */
 #include "resolver.h"
 
+
+#ifdef _WIN32
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <windns.h>
+#include <iphlpapi.h>
+
+using DnsQuery_A_t = DNS_STATUS(WINAPI *)(PCSTR, WORD, DWORD, PIP4_ARRAY, DNS_RECORDA **, PVOID *);
+using DnsRecordListFree_t = void(WINAPI *)(DNS_RECORDA *, DNS_FREE_TYPE);
+using GetNetworkParams_t = DWORD(WINAPI *)(PFIXED_INFO, PULONG);
+
+#endif
+
 #define MESSAGE_HEADER_LEN 12
 #define MESSAGE_RESPONSE 1
 #define MESSAGE_T_SRV 33
@@ -564,11 +577,6 @@ static int resolver_ares_srv_lookup(xmpp_ctx_t *ctx,
  * XXX If the code is compiled it should work like before.
  ******************************************************************************/
 
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include <windns.h>
-#include <iphlpapi.h>
-
 struct dnsquery_header {
     unsigned short id;
     unsigned char qr;
@@ -689,9 +697,8 @@ static int resolver_win32_srv_lookup(xmpp_ctx_t *ctx,
     void(WINAPI * pDnsRecordListFree)(DNS_RECORDA *, DNS_FREE_TYPE);
 
     if (hdnsapi = LoadLibrary("dnsapi.dll")) {
-        pDnsQuery_A = (void *)GetProcAddress(hdnsapi, "DnsQuery_A");
-        pDnsRecordListFree =
-            (void *)GetProcAddress(hdnsapi, "DnsRecordListFree");
+        pDnsQuery_A = (DnsQuery_A_t)GetProcAddress(hdnsapi, "DnsQuery_A");
+        pDnsRecordListFree = (DnsRecordListFree_t)GetProcAddress(hdnsapi, "DnsRecordListFree");
 
         if (pDnsQuery_A && pDnsRecordListFree) {
             DNS_RECORDA *dnsrecords = NULL;
@@ -756,8 +763,7 @@ resolver_win32_srv_query(const char *fulldomain, unsigned char *buf, size_t len)
             DWORD(WINAPI * pGetNetworkParams)(PFIXED_INFO, PULONG);
 
             if (hiphlpapi = LoadLibrary("Iphlpapi.dll")) {
-                pGetNetworkParams =
-                    (void *)GetProcAddress(hiphlpapi, "GetNetworkParams");
+                pGetNetworkParams = (GetNetworkParams_t)GetProcAddress(hiphlpapi, "GetNetworkParams");
 
                 if (pGetNetworkParams) {
                     FIXED_INFO *fi;
@@ -943,8 +949,9 @@ resolver_win32_srv_query(const char *fulldomain, unsigned char *buf, size_t len)
                 memset(&dnsaddr, 0, sizeof(dnsaddr));
 
                 dnsaddr.sin_family = AF_INET;
+                inet_pton(AF_INET, dnsserverips[i], &dnsaddr);
                 dnsaddr.sin_port = htons(53);
-                dnsaddr.sin_addr.s_addr = inet_addr(dnsserverips[i]);
+                //dnsaddr.sin_addr.s_addr = inet_addr(dnsserverips[i]);
 
                 addrlen = sizeof(dnsaddr);
                 sendto(sock, (char *)buf, offset, 0,
