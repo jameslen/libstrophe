@@ -190,12 +190,12 @@ int sock_set_nonblocking(sock_t sock)
     return _sock_set_blocking_mode(sock, 0);
 }
 
-int sock_read(sock_t sock, void *buff, size_t len)
+int sock_read(sock_t sock, char *buff, size_t len)
 {
     return recv(sock, buff, len, 0);
 }
 
-int sock_write(sock_t sock, const void *buff, size_t len)
+int sock_write(sock_t sock, const char *buff, size_t len)
 {
     return send(sock, buff, len, 0);
 }

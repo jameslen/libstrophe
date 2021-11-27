@@ -36,7 +36,7 @@ void hash_release(hash_t *table);
 int hash_add(hash_t *table, const char *key, void *data);
 
 /** look up a key in a hash table */
-void *hash_get(hash_t *table, const char *key);
+char *hash_get(hash_t *table, const char *key);
 
 /** delete a key from a hash table */
 int hash_drop(hash_t *table, const char *key);

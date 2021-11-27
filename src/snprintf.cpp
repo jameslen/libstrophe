@@ -338,7 +338,7 @@ static int dopr(char *buffer, size_t maxlen, const char *format, va_list args)
                     fmtstr(buffer, &currlen, maxlen, strvalue, flags, min, max);
                 break;
             case 'p':
-                strvalue = va_arg(args, void *);
+                strvalue = va_arg(args, char *);
                 total += fmtint(buffer, &currlen, maxlen, (long)strvalue, 16,
                                 min, max, flags);
                 break;

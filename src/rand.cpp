@@ -220,7 +220,7 @@ static int Hash_DRBG_Generate(Hash_DRBG_CTX *ctx,
         type __arg = (type)(arg);                         \
         if ((char *)ptr + sizeof(__arg) < (char *)last) { \
             *(type *)ptr = __arg;                         \
-            ptr = (void *)((char *)ptr + sizeof(__arg));  \
+            ptr = (uint8_t *)((char *)ptr + sizeof(__arg));  \
         }                                                 \
     } while (0)
 

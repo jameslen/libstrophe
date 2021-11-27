@@ -176,12 +176,12 @@ int hash_add(hash_t *table, const char *key, void *data)
 }
 
 /** look up a key in a hash table */
-void *hash_get(hash_t *table, const char *key)
+char *hash_get(hash_t *table, const char *key)
 {
     hashentry_t *entry;
 
     entry = _hash_entry_find(table, key);
-    return entry == NULL ? NULL : entry->value;
+    return entry == NULL ? NULL : (char*)entry->value;
 }
 
 /** delete a key from a hash table */
