@@ -112,11 +112,11 @@ _handle_error(xmpp_conn_t *conn, xmpp_stanza_t *stanza, void *userdata)
     }
 
     /* create stream error structure */
-    conn->stream_error = (xmpp_stream_error_t *)xmpp_alloc(
+    conn->stream_error = xmpp_alloc <xmpp_stream_error_t>(
         conn->ctx, sizeof(xmpp_stream_error_t));
 
     conn->stream_error->text = NULL;
-    conn->stream_error->type = XMPP_SE_UNDEFINED_CONDITION;
+    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_UNDEFINED_CONDITION;
 
     if (conn->stream_error) {
         child = xmpp_stanza_get_children(stanza);
@@ -134,53 +134,53 @@ _handle_error(xmpp_conn_t *conn, xmpp_stanza_t *stanza, void *userdata)
                         xmpp_free(conn->ctx, conn->stream_error->text);
                     conn->stream_error->text = xmpp_stanza_get_text(child);
                 } else if (strcmp(name, "bad-format") == 0)
-                    conn->stream_error->type = XMPP_SE_BAD_FORMAT;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_BAD_FORMAT;
                 else if (strcmp(name, "bad-namespace-prefix") == 0)
-                    conn->stream_error->type = XMPP_SE_BAD_NS_PREFIX;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_BAD_NS_PREFIX;
                 else if (strcmp(name, "conflict") == 0)
-                    conn->stream_error->type = XMPP_SE_CONFLICT;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_CONFLICT;
                 else if (strcmp(name, "connection-timeout") == 0)
-                    conn->stream_error->type = XMPP_SE_CONN_TIMEOUT;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_CONN_TIMEOUT;
                 else if (strcmp(name, "host-gone") == 0)
-                    conn->stream_error->type = XMPP_SE_HOST_GONE;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_HOST_GONE;
                 else if (strcmp(name, "host-unknown") == 0)
-                    conn->stream_error->type = XMPP_SE_HOST_UNKNOWN;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_HOST_UNKNOWN;
                 else if (strcmp(name, "improper-addressing") == 0)
-                    conn->stream_error->type = XMPP_SE_IMPROPER_ADDR;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_IMPROPER_ADDR;
                 else if (strcmp(name, "internal-server-error") == 0)
-                    conn->stream_error->type = XMPP_SE_INTERNAL_SERVER_ERROR;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_INTERNAL_SERVER_ERROR;
                 else if (strcmp(name, "invalid-from") == 0)
-                    conn->stream_error->type = XMPP_SE_INVALID_FROM;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_INVALID_FROM;
                 else if (strcmp(name, "invalid-id") == 0)
-                    conn->stream_error->type = XMPP_SE_INVALID_ID;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_INVALID_ID;
                 else if (strcmp(name, "invalid-namespace") == 0)
-                    conn->stream_error->type = XMPP_SE_INVALID_NS;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_INVALID_NS;
                 else if (strcmp(name, "invalid-xml") == 0)
-                    conn->stream_error->type = XMPP_SE_INVALID_XML;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_INVALID_XML;
                 else if (strcmp(name, "not-authorized") == 0)
-                    conn->stream_error->type = XMPP_SE_NOT_AUTHORIZED;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_NOT_AUTHORIZED;
                 else if (strcmp(name, "policy-violation") == 0)
-                    conn->stream_error->type = XMPP_SE_POLICY_VIOLATION;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_POLICY_VIOLATION;
                 else if (strcmp(name, "remote-connection-failed") == 0)
-                    conn->stream_error->type = XMPP_SE_REMOTE_CONN_FAILED;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_REMOTE_CONN_FAILED;
                 else if (strcmp(name, "resource-constraint") == 0)
-                    conn->stream_error->type = XMPP_SE_RESOURCE_CONSTRAINT;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_RESOURCE_CONSTRAINT;
                 else if (strcmp(name, "restricted-xml") == 0)
-                    conn->stream_error->type = XMPP_SE_RESTRICTED_XML;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_RESTRICTED_XML;
                 else if (strcmp(name, "see-other-host") == 0)
-                    conn->stream_error->type = XMPP_SE_SEE_OTHER_HOST;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_SEE_OTHER_HOST;
                 else if (strcmp(name, "system-shutdown") == 0)
-                    conn->stream_error->type = XMPP_SE_SYSTEM_SHUTDOWN;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_SYSTEM_SHUTDOWN;
                 else if (strcmp(name, "undefined-condition") == 0)
-                    conn->stream_error->type = XMPP_SE_UNDEFINED_CONDITION;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_UNDEFINED_CONDITION;
                 else if (strcmp(name, "unsupported-encoding") == 0)
-                    conn->stream_error->type = XMPP_SE_UNSUPPORTED_ENCODING;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_UNSUPPORTED_ENCODING;
                 else if (strcmp(name, "unsupported-stanza-type") == 0)
-                    conn->stream_error->type = XMPP_SE_UNSUPPORTED_STANZA_TYPE;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_UNSUPPORTED_STANZA_TYPE;
                 else if (strcmp(name, "unsupported-version") == 0)
-                    conn->stream_error->type = XMPP_SE_UNSUPPORTED_VERSION;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_UNSUPPORTED_VERSION;
                 else if (strcmp(name, "xml-not-well-formed") == 0)
-                    conn->stream_error->type = XMPP_SE_XML_NOT_WELL_FORMED;
+                    conn->stream_error->type = xmpp_error_type_t::XMPP_SE_XML_NOT_WELL_FORMED;
             }
         } while ((child = xmpp_stanza_get_next(child)));
 
@@ -538,7 +538,7 @@ static char *_make_scram_init_msg(xmpp_conn_t *conn)
     }
     xmpp_rand_nonce(ctx->rand, nonce, sizeof(nonce));
     message_len = strlen(node) + strlen(nonce) + 8 + 1;
-    message = xmpp_alloc(ctx, message_len);
+    message = xmpp_alloc<char>(ctx, message_len);
     if (message) {
         xmpp_snprintf(message, message_len, "n,,n=%s,r=%s", node, nonce);
     }
@@ -674,7 +674,7 @@ static void _auth(xmpp_conn_t *conn)
             xmpp_stanza_set_text(authdata, "=");
         } else {
             xmpp_free(conn->ctx, str);
-            str = xmpp_base64_encode(conn->ctx, (void *)conn->jid,
+            str = xmpp_base64_encode(conn->ctx, (const uint8_t *)conn->jid,
                                      strlen(conn->jid));
             if (!str) {
                 xmpp_stanza_release(authdata);
@@ -706,7 +706,7 @@ static void _auth(xmpp_conn_t *conn)
                    "Password hasn't been set, and SASL ANONYMOUS unsupported.");
         xmpp_disconnect(conn);
     } else if (conn->sasl_support & SASL_MASK_SCRAM) {
-        scram_ctx = xmpp_alloc(conn->ctx, sizeof(*scram_ctx));
+        scram_ctx = xmpp_alloc<scram_user_data>(conn->ctx, sizeof(*scram_ctx));
         if (conn->sasl_support & SASL_MASK_SCRAMSHA512)
             scram_ctx->alg = &scram_sha512;
         else if (conn->sasl_support & SASL_MASK_SCRAMSHA256)
@@ -1045,7 +1045,8 @@ _handle_bind(xmpp_conn_t *conn, xmpp_stanza_t *stanza, void *userdata)
             conn->authenticated = 1;
 
             /* call connection handler */
-            conn->conn_handler(conn, XMPP_CONN_CONNECT, 0, NULL,
+            conn->conn_handler(conn, xmpp_conn_event_t::XMPP_CONN_CONNECT, 0,
+                               NULL,
                                conn->userdata);
         }
     } else {
@@ -1086,7 +1087,8 @@ _handle_session(xmpp_conn_t *conn, xmpp_stanza_t *stanza, void *userdata)
         conn->authenticated = 1;
 
         /* call connection handler */
-        conn->conn_handler(conn, XMPP_CONN_CONNECT, 0, NULL, conn->userdata);
+        conn->conn_handler(conn, xmpp_conn_event_t::XMPP_CONN_CONNECT, 0, NULL,
+                           conn->userdata);
     } else {
         xmpp_error(conn->ctx, "xmpp", "Server sent malformed session reply.");
         xmpp_disconnect(conn);
@@ -1143,7 +1145,7 @@ _handle_legacy(xmpp_conn_t *conn, xmpp_stanza_t *stanza, void *userdata)
         xmpp_debug(conn->ctx, "xmpp", "Legacy auth succeeded.");
 
         conn->authenticated = 1;
-        conn->conn_handler(conn, XMPP_CONN_CONNECT, 0, NULL, conn->userdata);
+        conn->conn_handler(conn, xmpp_conn_event_t::XMPP_CONN_CONNECT, 0, NULL, conn->userdata);
     } else {
         xmpp_error(conn->ctx, "xmpp",
                    "Server sent us a legacy authentication "
@@ -1288,7 +1290,7 @@ int _handle_component_auth(xmpp_conn_t *conn)
     crypto_SHA1_Update(&mdctx, (uint8_t *)conn->pass, strlen(conn->pass));
     crypto_SHA1_Final(&mdctx, md_value);
 
-    digest = xmpp_alloc(conn->ctx, 2 * sizeof(md_value) + 1);
+    digest = xmpp_alloc<char>(conn->ctx, 2 * sizeof(md_value) + 1);
     if (digest) {
         /* convert the digest into string representation */
         for (i = 0; i < sizeof(md_value); i++)
@@ -1340,7 +1342,7 @@ int _handle_component_hs_response(xmpp_conn_t *conn,
         return XMPP_EINT;
     } else {
         conn->authenticated = 1;
-        conn->conn_handler(conn, XMPP_CONN_CONNECT, 0, NULL, conn->userdata);
+        conn->conn_handler(conn, xmpp_conn_event_t::XMPP_CONN_CONNECT, 0, NULL, conn->userdata);
     }
 
     /* We don't need this handler anymore, return 0 so it can be deleted
@@ -1363,7 +1365,7 @@ void auth_handle_open_raw(xmpp_conn_t *conn)
     handler_reset_timed(conn, 0);
     /* user handlers are not called before authentication is completed. */
     conn->authenticated = 1;
-    conn->conn_handler(conn, XMPP_CONN_CONNECT, 0, NULL, conn->userdata);
+    conn->conn_handler(conn, xmpp_conn_event_t::XMPP_CONN_CONNECT, 0, NULL, conn->userdata);
 }
 
 void auth_handle_open_stub(xmpp_conn_t *conn)

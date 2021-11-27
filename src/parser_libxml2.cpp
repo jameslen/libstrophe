@@ -48,7 +48,7 @@ _set_attributes(xmpp_stanza_t *stanza, int nattrs, const xmlChar **attrs)
     /* SAX2 uses array of localname/prefix/uri/value_begin/value_end */
     for (i = 0; i < nattrs * 5; i += 5) {
         len = attrs[i + 4] - attrs[i + 3];
-        value = xmpp_alloc(stanza->ctx, len + 1);
+        value = xmpp_alloc<char>(stanza->ctx, len + 1);
         if (value) {
             memcpy(value, attrs[i + 3], len);
             value[len] = '\0';
@@ -70,7 +70,7 @@ _convert_attrs(parser_t *parser, int nattrs, const xmlChar **attrs)
     if (!attrs)
         return NULL;
 
-    ret = xmpp_alloc(parser->ctx, (nattrs + 1) * 2 * sizeof(char *));
+    ret = xmpp_alloc<char*>(parser->ctx, (nattrs + 1) * 2 * sizeof(char *));
     if (!ret)
         return NULL;
     memset(ret, 0, (nattrs + 1) * 2 * sizeof(char *));
@@ -80,7 +80,7 @@ _convert_attrs(parser_t *parser, int nattrs, const xmlChar **attrs)
         o = c * 2;
 
         len = attrs[i + 4] - attrs[i + 3];
-        value = xmpp_alloc(parser->ctx, len + 1);
+        value = xmpp_alloc<char>(parser->ctx, len + 1);
         if (value) {
             memcpy(value, attrs[i + 3], len);
             value[len] = '\0';
@@ -235,7 +235,7 @@ parser_t *parser_new(xmpp_ctx_t *ctx,
 {
     parser_t *parser;
 
-    parser = xmpp_alloc(ctx, sizeof(parser_t));
+    parser = xmpp_alloc<parser_t>(ctx, sizeof(parser_t));
     if (parser != NULL) {
         parser->ctx = ctx;
         parser->xmlctx = NULL;

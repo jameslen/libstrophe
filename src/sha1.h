@@ -8,10 +8,6 @@
 #ifndef __LIBSTROPHE_SHA1_H__
 #define __LIBSTROPHE_SHA1_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* make sure the stdint.h types are available */
 #include "ostypes.h"
 
@@ -28,8 +24,5 @@ void crypto_SHA1_Update(SHA1_CTX *context, const uint8_t *data, size_t len);
 void crypto_SHA1_Final(SHA1_CTX *context, uint8_t *digest);
 void crypto_SHA1(const uint8_t *data, size_t len, uint8_t *digest);
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __LIBSTROPHE_SHA1_H__ */

@@ -16,100 +16,90 @@
 #ifndef __LIBSTROPHE_STROPHE_H__
 #define __LIBSTROPHE_STROPHE_H__
 
-#include <stddef.h> /* size_t */
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <cstddef> /* size_t */
+#include <cstdint>
 
 /* namespace defines */
 /** @def XMPP_NS_CLIENT
  *  Namespace definition for 'jabber:client'.
  */
-#define XMPP_NS_CLIENT "jabber:client"
+constexpr auto XMPP_NS_CLIENT = "jabber:client";
 /** @def XMPP_NS_COMPONENT
  *  Namespace definition for 'jabber:component:accept'.
  */
-#define XMPP_NS_COMPONENT "jabber:component:accept"
+constexpr auto XMPP_NS_COMPONENT = "jabber:component:accept";
 /** @def XMPP_NS_STREAMS
  *  Namespace definition for 'http://etherx.jabber.org/streams'.
  */
-#define XMPP_NS_STREAMS "http://etherx.jabber.org/streams"
+constexpr auto XMPP_NS_STREAMS = "http://etherx.jabber.org/streams";
 /** @def XMPP_NS_STREAMS_IETF
  *  Namespace definition for 'urn:ietf:params:xml:ns:xmpp-streams'.
  */
-#define XMPP_NS_STREAMS_IETF "urn:ietf:params:xml:ns:xmpp-streams"
+constexpr auto XMPP_NS_STREAMS_IETF = "urn:ietf:params:xml:ns:xmpp-streams";
 /** @def XMPP_NS_STANZAS_IETF
  *  Namespace definition for 'urn:ietf:params:xml:ns:xmpp-stanzas'.
  */
-#define XMPP_NS_STANZAS_IETF "urn:ietf:params:xml:ns:xmpp-stanzas"
+constexpr auto XMPP_NS_STANZAS_IETF = "urn:ietf:params:xml:ns:xmpp-stanzas";
 /** @def XMPP_NS_TLS
  *  Namespace definition for 'url:ietf:params:xml:ns:xmpp-tls'.
  */
-#define XMPP_NS_TLS "urn:ietf:params:xml:ns:xmpp-tls"
+constexpr auto XMPP_NS_TLS = "urn:ietf:params:xml:ns:xmpp-tls";
 /** @def XMPP_NS_SASL
  *  Namespace definition for 'urn:ietf:params:xml:ns:xmpp-sasl'.
  */
-#define XMPP_NS_SASL "urn:ietf:params:xml:ns:xmpp-sasl"
+constexpr auto XMPP_NS_SASL = "urn:ietf:params:xml:ns:xmpp-sasl";
 /** @def XMPP_NS_BIND
  *  Namespace definition for 'urn:ietf:params:xml:ns:xmpp-bind'.
  */
-#define XMPP_NS_BIND "urn:ietf:params:xml:ns:xmpp-bind"
+constexpr auto XMPP_NS_BIND = "urn:ietf:params:xml:ns:xmpp-bind";
 /** @def XMPP_NS_SESSION
  *  Namespace definition for 'urn:ietf:params:xml:ns:xmpp-session'.
  */
-#define XMPP_NS_SESSION "urn:ietf:params:xml:ns:xmpp-session"
+constexpr auto XMPP_NS_SESSION = "urn:ietf:params:xml:ns:xmpp-session";
 /** @def XMPP_NS_AUTH
  *  Namespace definition for 'jabber:iq:auth'.
  */
-#define XMPP_NS_AUTH "jabber:iq:auth"
+constexpr auto XMPP_NS_AUTH = "jabber:iq:auth";
 /** @def XMPP_NS_DISCO_INFO
  *  Namespace definition for 'http://jabber.org/protocol/disco#info'.
  */
-#define XMPP_NS_DISCO_INFO "http://jabber.org/protocol/disco#info"
+constexpr auto XMPP_NS_DISCO_INFO = "http://jabber.org/protocol/disco#info";
 /** @def XMPP_NS_DISCO_ITEMS
  *  Namespace definition for 'http://jabber.org/protocol/disco#items'.
  */
-#define XMPP_NS_DISCO_ITEMS "http://jabber.org/protocol/disco#items"
+constexpr auto XMPP_NS_DISCO_ITEMS = "http://jabber.org/protocol/disco#items";
 /** @def XMPP_NS_ROSTER
  *  Namespace definition for 'jabber:iq:roster'.
  */
-#define XMPP_NS_ROSTER "jabber:iq:roster"
+constexpr auto XMPP_NS_ROSTER = "jabber:iq:roster";
 /** @def XMPP_NS_REGISTER
  *  Namespace definition for 'jabber:iq:register'.
  */
-#define XMPP_NS_REGISTER "jabber:iq:register"
+constexpr auto XMPP_NS_REGISTER = "jabber:iq:register";
 
 /* error defines */
 /** @def XMPP_EOK
  *  Success error code.
  */
-#define XMPP_EOK 0
+constexpr auto XMPP_EOK = 0;
 /** @def XMPP_EMEM
  *  Memory related failure error code.
  *
  *  This is returned on allocation errors and signals that the host may
  *  be out of memory.
  */
-#define XMPP_EMEM -1
+constexpr auto XMPP_EMEM = -1;
 /** @def XMPP_EINVOP
  *  Invalid operation error code.
  *
  *  This error code is returned when the operation was invalid and signals
  *  that the Strophe API is being used incorrectly.
  */
-#define XMPP_EINVOP -2
+constexpr auto XMPP_EINVOP = -2;
 /** @def XMPP_EINT
  *  Internal failure error code.
  */
-#define XMPP_EINT -3
-
-/* initialization and shutdown */
-void xmpp_initialize(void);
-void xmpp_shutdown(void);
-
-/* version */
-int xmpp_version_check(int major, int minor);
+constexpr auto XMPP_EINT = -3;
 
 /* run-time contexts */
 
@@ -124,6 +114,81 @@ typedef struct _xmpp_ctx_t xmpp_ctx_t;
 
 typedef struct _xmpp_tlscert_t xmpp_tlscert_t;
 
+typedef struct _xmpp_rand_t xmpp_rand_t;
+
+/* opaque connection object */
+typedef struct _xmpp_conn_t xmpp_conn_t;
+typedef struct _xmpp_stanza_t xmpp_stanza_t;
+
+enum class xmpp_loop_status_t {
+    XMPP_LOOP_NOTSTARTED,
+    XMPP_LOOP_RUNNING,
+    XMPP_LOOP_QUIT
+};
+
+typedef struct _xmpp_handlist_t xmpp_handlist_t;
+struct _xmpp_handlist_t {
+    /* common members */
+    int user_handler;
+    int (*handler)();
+    void *userdata;
+    int enabled; /* handlers are added disabled and enabled after the
+                  * handler chain is processed to prevent stanzas from
+                  * getting processed by newly added handlers */
+    xmpp_handlist_t *next;
+
+    union {
+        /* timed handlers */
+        struct {
+            unsigned long period;
+            uint64_t last_stamp;
+        };
+        /* id handlers */
+        struct {
+            char *id;
+        };
+        /* normal handlers */
+        struct {
+            char *ns;
+            char *name;
+            char *type;
+        };
+    } u;
+};
+
+struct xmpp_connlist_t
+{
+    xmpp_conn_t *conn;
+    struct xmpp_connlist_t *next;
+};
+
+struct _xmpp_ctx_t {
+    const xmpp_mem_t *mem;
+    const xmpp_log_t *log;
+    int verbosity;
+
+    xmpp_rand_t *rand;
+    xmpp_loop_status_t loop_status;
+    xmpp_connlist_t *connlist;
+    xmpp_handlist_t *timed_handlers;
+
+    unsigned long timeout;
+};
+
+struct _xmpp_mem_t {
+    void *(*alloc)(size_t size, void *userdata);
+    void (*free)(void *p, void *userdata);
+    void *(*realloc)(void *p, size_t size, void *userdata);
+    void *userdata;
+};
+
+/* initialization and shutdown */
+void xmpp_initialize(void);
+void xmpp_shutdown(void);
+
+/* version */
+int xmpp_version_check(int major, int minor);
+
 xmpp_ctx_t *xmpp_ctx_new(const xmpp_mem_t *mem, const xmpp_log_t *log);
 void xmpp_ctx_free(xmpp_ctx_t *ctx);
 
@@ -132,14 +197,11 @@ void xmpp_ctx_set_verbosity(xmpp_ctx_t *ctx, int level);
 
 /* free some blocks returned by other APIs, for example the
    buffer you get from xmpp_stanza_to_text */
-void xmpp_free(const xmpp_ctx_t *ctx, void *p);
-
-struct _xmpp_mem_t {
-    void *(*alloc)(size_t size, void *userdata);
-    void (*free)(void *p, void *userdata);
-    void *(*realloc)(void *p, size_t size, void *userdata);
-    void *userdata;
-};
+template <typename T>
+void xmpp_free(const xmpp_ctx_t *ctx, T *p) 
+{
+    ctx->mem->free(p, ctx->mem->userdata);
+}
 
 typedef enum {
     XMPP_LEVEL_DEBUG,
@@ -165,32 +227,31 @@ xmpp_log_t *xmpp_get_default_logger(xmpp_log_level_t level);
 
 /* connection */
 
-/* opaque connection object */
-typedef struct _xmpp_conn_t xmpp_conn_t;
-typedef struct _xmpp_stanza_t xmpp_stanza_t;
+
 
 /* connection flags */
-#define XMPP_CONN_FLAG_DISABLE_TLS (1UL << 0)
-#define XMPP_CONN_FLAG_MANDATORY_TLS (1UL << 1)
-#define XMPP_CONN_FLAG_LEGACY_SSL (1UL << 2)
+constexpr auto XMPP_CONN_FLAG_DISABLE_TLS = (1UL << 0);
+constexpr auto XMPP_CONN_FLAG_MANDATORY_TLS = (1UL << 1);
+constexpr auto XMPP_CONN_FLAG_LEGACY_SSL = (1UL << 2);
+
 /** @def XMPP_CONN_FLAG_TRUST_TLS
  *  Trust server's certificate even if it is invalid.
  */
-#define XMPP_CONN_FLAG_TRUST_TLS (1UL << 3)
+constexpr auto XMPP_CONN_FLAG_TRUST_TLS = (1UL << 3);
 /** @def XMPP_CONN_FLAG_LEGACY_AUTH
  *  Enable legacy authentication support.
  */
-#define XMPP_CONN_FLAG_LEGACY_AUTH (1UL << 4)
+constexpr auto XMPP_CONN_FLAG_LEGACY_AUTH = (1UL << 4);
 
 /* connect callback */
-typedef enum {
+enum class xmpp_conn_event_t {
     XMPP_CONN_CONNECT,
     XMPP_CONN_RAW_CONNECT,
     XMPP_CONN_DISCONNECT,
     XMPP_CONN_FAIL
-} xmpp_conn_event_t;
+};
 
-typedef enum {
+enum class xmpp_error_type_t {
     XMPP_SE_BAD_FORMAT,
     XMPP_SE_BAD_NS_PREFIX,
     XMPP_SE_CONFLICT,
@@ -215,13 +276,13 @@ typedef enum {
     XMPP_SE_UNSUPPORTED_STANZA_TYPE,
     XMPP_SE_UNSUPPORTED_VERSION,
     XMPP_SE_XML_NOT_WELL_FORMED
-} xmpp_error_type_t;
+};
 
 /** Certificate Elements
  *
  *  @ingroup TLS
  */
-typedef enum {
+enum class xmpp_cert_element_t : uint32_t {
     XMPP_CERT_VERSION,            /**< X.509 Version */
     XMPP_CERT_SERIALNUMBER,       /**< SerialNumber */
     XMPP_CERT_SUBJECT,            /**< Subject */
@@ -233,15 +294,15 @@ typedef enum {
     XMPP_CERT_FINGERPRINT_SHA1,   /**< Fingerprint SHA-1 */
     XMPP_CERT_FINGERPRINT_SHA256, /**< Fingerprint SHA-256 */
     XMPP_CERT_ELEMENT_MAX         /**< Last element of the enum */
-} xmpp_cert_element_t;
+};
 
-typedef struct {
+struct xmpp_stream_error_t {
     xmpp_error_type_t type;
     char *text;
     xmpp_stanza_t *stanza;
-} xmpp_stream_error_t;
+};
 
-typedef void (*xmpp_conn_handler)(xmpp_conn_t *conn,
+using xmpp_conn_handler = void (*)(xmpp_conn_t *conn,
                                   xmpp_conn_event_t event,
                                   int error,
                                   xmpp_stream_error_t *stream_error,
@@ -266,8 +327,8 @@ typedef void (*xmpp_conn_handler)(xmpp_conn_t *conn,
  *
  *  @ingroup TLS
  */
-typedef int (*xmpp_certfail_handler)(const xmpp_tlscert_t *cert,
-                                     const char *const errormsg);
+using xmpp_certfail_handler = int (*)(const xmpp_tlscert_t *cert,
+                                      const char *const errormsg);
 
 void xmpp_send_error(xmpp_conn_t *conn, xmpp_error_type_t type, char *text);
 xmpp_conn_t *xmpp_conn_new(xmpp_ctx_t *ctx);
@@ -332,7 +393,7 @@ void xmpp_send_raw(xmpp_conn_t *conn, const char *data, size_t len);
 /* handlers */
 
 /* if the handler returns false it is removed */
-typedef int (*xmpp_timed_handler)(xmpp_conn_t *conn, void *userdata);
+using xmpp_timed_handler = int (*)(xmpp_conn_t *conn, void *userdata);
 
 void xmpp_timed_handler_add(xmpp_conn_t *conn,
                             xmpp_timed_handler handler,
@@ -532,8 +593,5 @@ void xmpp_base64_decode_bin(xmpp_ctx_t *ctx,
                             unsigned char **out,
                             size_t *outlen);
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __LIBSTROPHE_STROPHE_H__ */

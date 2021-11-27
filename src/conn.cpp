@@ -50,10 +50,10 @@
 
 static int _disconnect_cleanup(xmpp_conn_t *conn, void *userdata);
 static char *_conn_build_stream_tag(xmpp_conn_t *conn,
-                                    char **attributes,
+                                    const char **attributes,
                                     size_t attributes_len);
 static int _conn_open_stream_with_attributes(xmpp_conn_t *conn,
-                                             char **attributes,
+                                             const char **attributes,
                                              size_t attributes_len);
 static void _conn_attributes_new(xmpp_conn_t *conn,
                                  char **attrs,
@@ -102,7 +102,7 @@ xmpp_conn_t *xmpp_conn_new(xmpp_ctx_t *ctx)
     if (ctx == NULL)
         return NULL;
 
-    conn = xmpp_alloc(ctx, sizeof(xmpp_conn_t));
+    conn = xmpp_alloc <xmpp_conn_t>(ctx, sizeof(xmpp_conn_t));
     if (conn != NULL) {
         conn->ctx = ctx;
 
@@ -177,7 +177,7 @@ xmpp_conn_t *xmpp_conn_new(xmpp_ctx_t *ctx)
         while (tail && tail->next)
             tail = tail->next;
 
-        item = xmpp_alloc(conn->ctx, sizeof(xmpp_connlist_t));
+        item = xmpp_alloc<xmpp_connlist_t>(conn->ctx, sizeof(xmpp_connlist_t));
         if (!item) {
             xmpp_error(conn->ctx, "xmpp", "failed to allocate memory");
             xmpp_free(conn->ctx, conn->lang);
@@ -755,7 +755,7 @@ void conn_established(xmpp_conn_t *conn)
         /* we skip authentication for a "raw" connection, but the event loop
            ignores user's handlers when conn->authenticated is not set. */
         conn->authenticated = 1;
-        conn->conn_handler(conn, XMPP_CONN_RAW_CONNECT, 0, NULL,
+        conn->conn_handler(conn, xmpp_conn_event_t::XMPP_CONN_RAW_CONNECT, 0, NULL,
                            conn->userdata);
     } else {
         /* send stream init */
@@ -802,7 +802,7 @@ int xmpp_conn_open_stream_default(xmpp_conn_t *conn)
  *  @ingroup Connections
  */
 int xmpp_conn_open_stream(xmpp_conn_t *conn,
-                          char **attributes,
+                          const char **attributes,
                           size_t attributes_len)
 {
     if (!conn->is_raw)
@@ -856,7 +856,7 @@ void conn_disconnect(xmpp_conn_t *conn)
     sock_close(conn->sock);
 
     /* fire off connection handler */
-    conn->conn_handler(conn, XMPP_CONN_DISCONNECT, conn->error,
+    conn->conn_handler(conn, xmpp_conn_event_t::XMPP_CONN_DISCONNECT, conn->error,
                        conn->stream_error, conn->userdata);
 }
 
@@ -928,7 +928,7 @@ void xmpp_send_raw_string(xmpp_conn_t *conn, const char *fmt, ...)
         /* we need more space for this data, so we allocate a big
          * enough buffer and print to that */
         len++; /* account for trailing \0 */
-        bigbuf = xmpp_alloc(conn->ctx, len);
+        bigbuf = xmpp_alloc<char>(conn->ctx, len);
         if (!bigbuf) {
             xmpp_debug(conn->ctx, "xmpp",
                        "Could not allocate memory for send_raw_string");
@@ -1010,8 +1010,8 @@ void conn_open_stream(xmpp_conn_t *conn)
     size_t attributes_len;
     int rc;
     char *from = NULL;
-    char *ns = conn->type == XMPP_CLIENT ? XMPP_NS_CLIENT : XMPP_NS_COMPONENT;
-    char *attributes[12] = {
+    auto ns = conn->type == XMPP_CLIENT ? XMPP_NS_CLIENT : XMPP_NS_COMPONENT;
+    const char *attributes[12] = {
         "to",           conn->domain,    "xml:lang", conn->lang,
         "version",      "1.0",           "xmlns",    ns,
         "xmlns:stream", XMPP_NS_STREAMS, "from",     NULL};
@@ -1206,7 +1206,7 @@ static int _disconnect_cleanup(xmpp_conn_t *conn, void *userdata)
 }
 
 static char *_conn_build_stream_tag(xmpp_conn_t *conn,
-                                    char **attributes,
+                                    const char **attributes,
                                     size_t attributes_len)
 {
     char *tag;
@@ -1222,7 +1222,7 @@ static char *_conn_build_stream_tag(xmpp_conn_t *conn,
     len = strlen(tag_head) + strlen(tag_tail);
     for (i = 0; i < attributes_len; ++i)
         len += strlen(attributes[i]) + 2;
-    tag = xmpp_alloc(conn->ctx, len + 1);
+    tag = xmpp_alloc<char>(conn->ctx, len + 1);
     if (!tag)
         return NULL;
 
@@ -1251,7 +1251,7 @@ static char *_conn_build_stream_tag(xmpp_conn_t *conn,
 }
 
 static int _conn_open_stream_with_attributes(xmpp_conn_t *conn,
-                                             char **attributes,
+                                             const char **attributes,
                                              size_t attributes_len)
 {
     char *tag;
@@ -1278,7 +1278,7 @@ static void _conn_attributes_new(xmpp_conn_t *conn,
     if (attrs) {
         for (; attrs[nr]; ++nr)
             ;
-        array = xmpp_alloc(conn->ctx, sizeof(*array) * nr);
+        array = xmpp_alloc<char*>(conn->ctx, sizeof(*array) * nr);
         for (i = 0; array && i < nr; ++i) {
             array[i] = (i & 1) == 0 ? parser_attr_name(conn->ctx, attrs[i])
                                     : xmpp_strdup(conn->ctx, attrs[i]);
@@ -1316,7 +1316,7 @@ static void _log_open_tag(xmpp_conn_t *conn, char **attrs)
     size_t nr;
 
     _conn_attributes_new(conn, attrs, &attributes, &nr);
-    tag = _conn_build_stream_tag(conn, attributes, nr);
+    tag = _conn_build_stream_tag(conn, (const char**)attributes, nr);
     if (tag) {
         xmpp_debug(conn->ctx, "xmpp", "RECV: %s", tag);
         xmpp_free(conn->ctx, tag);
@@ -1522,7 +1522,7 @@ static int _send_raw(xmpp_conn_t *conn, char *data, size_t len)
     xmpp_send_queue_t *item;
 
     /* create send queue item for queue */
-    item = xmpp_alloc(conn->ctx, sizeof(xmpp_send_queue_t));
+    item = xmpp_alloc<xmpp_send_queue_t>(conn->ctx, sizeof(xmpp_send_queue_t));
     if (!item) {
         xmpp_error(conn->ctx, "conn", "DROPPED: %s", data);
         xmpp_free(conn->ctx, data);

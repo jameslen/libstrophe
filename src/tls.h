@@ -19,6 +19,8 @@
 #include "common.h"
 #include "sock.h"
 
+#include <array>
+
 typedef struct _tls tls_t;
 
 typedef struct _dnsname_t dnsname_t;
@@ -27,7 +29,7 @@ struct _xmpp_tlscert_t {
     xmpp_ctx_t *ctx;
     xmpp_conn_t *conn;
     char *pem;
-    char *elements[XMPP_CERT_ELEMENT_MAX];
+    std::array<char *, static_cast<size_t>(xmpp_cert_element_t::XMPP_CERT_ELEMENT_MAX)> elements;
     dnsname_t *dnsnames;
 };
 

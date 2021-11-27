@@ -65,7 +65,7 @@ char *xmpp_uuid_gen(xmpp_ctx_t *ctx)
 {
     char *uuid;
 
-    uuid = xmpp_alloc(ctx, XMPP_UUID_LEN + 1);
+    uuid = xmpp_alloc<char>(ctx, XMPP_UUID_LEN + 1);
     if (uuid != NULL) {
         crypto_uuid_gen(ctx, uuid);
     }

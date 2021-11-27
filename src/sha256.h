@@ -7,10 +7,6 @@
 #ifndef __LIBSTROPHE_SHA256_H__
 #define __LIBSTROPHE_SHA256_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* make sure the stdint.h types are available */
 #include "ostypes.h"
 
@@ -27,8 +23,6 @@ void sha256_process(sha256_context *md, const uint8_t *in, size_t inlen);
 void sha256_done(sha256_context *md, uint8_t *out);
 
 void sha256_hash(const uint8_t *data, size_t len, uint8_t *digest);
-#ifdef __cplusplus
-}
-#endif
+
 
 #endif /* __LIBSTROPHE_SHA256_H__ */

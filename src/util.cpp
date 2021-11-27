@@ -63,7 +63,7 @@ char *xmpp_strndup(const xmpp_ctx_t *ctx, const char *s, size_t len)
     if (l > len)
         l = len;
 
-    copy = xmpp_alloc(ctx, l + 1);
+    copy = xmpp_alloc<char>(ctx, l + 1);
     if (!copy) {
         xmpp_error(ctx, "xmpp", "failed to allocate required memory");
         return NULL;

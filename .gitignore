@@ -72,3 +72,6 @@ expat/
 .settings/
 .project
 .cproject
+.vs
+x64/
+*.user

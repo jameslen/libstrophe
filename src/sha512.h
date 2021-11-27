@@ -7,10 +7,6 @@
 #ifndef __LIBSTROPHE_SHA512_H__
 #define __LIBSTROPHE_SHA512_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* make sure the stdint.h types are available */
 #include "ostypes.h"
 
@@ -27,8 +23,5 @@ void sha512_process(sha512_context *cc, const uint8_t *data, size_t len);
 void sha512_done(sha512_context *cc, uint8_t *dst);
 
 void sha512_hash(const uint8_t *data, size_t len, uint8_t *digest);
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __LIBSTROPHE_SHA512_H__ */

@@ -6,7 +6,7 @@ AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: 'false'
 BinPackParameters: 'false'
 BreakBeforeBraces: Linux
-ColumnLimit: '80'
+ColumnLimit: '120'
 DerivePointerAlignment: 'false'
 IndentGotoLabels: false
 IndentWidth: '4'

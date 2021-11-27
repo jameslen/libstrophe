@@ -10,12 +10,14 @@
 
 #include <string.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* make sure the stdint.h types are available */
 #include "ostypes.h"
+
+//#include <bit>
+
+// TODO: Clean this mess up
+
+#define __LITTLE_ENDIAN__
 
 #if defined(__BIG_ENDIAN__) ||                                   \
     (defined(__BYTE_ORDER__) && defined(__ORDER_BIG_ENDIAN__) && \
@@ -104,9 +106,5 @@ extern "C" {
     (((((x)&CONST64(0xFFFFFFFFFFFFFFFF)) >> ((uint64_t)(y)&CONST64(63))) | \
       ((x) << (((uint64_t)64 - ((y)&63)) & 63))) &                         \
      CONST64(0xFFFFFFFFFFFFFFFF))
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* __LIBSTROPHE_SHA_H__ */

@@ -196,7 +196,7 @@ int resolver_srv_lookup(xmpp_ctx_t *ctx,
         return set;
 #endif /* _WIN32 */
 
-    buf = xmpp_alloc(ctx, RESOLVER_BUF_MAX);
+    buf = xmpp_alloc<uint8_t>(ctx, RESOLVER_BUF_MAX);
     if (buf == NULL)
         return XMPP_DOMAIN_NOT_FOUND;
 
@@ -386,7 +386,7 @@ static int resolver_raw_srv_lookup_buf(xmpp_ctx_t *ctx,
     unsigned name_len;
     unsigned rdlength;
     uint16_t type;
-    uint16_t class;
+    uint16_t class_;
     struct message_header header;
     resolver_srv_rr_t *rr;
 
@@ -427,11 +427,11 @@ static int resolver_raw_srv_lookup_buf(xmpp_ctx_t *ctx,
         j += name_len;
         BUF_OVERFLOW_CHECK(j + 16, len);
         type = xmpp_ntohs_ptr(&buf[j]);
-        class = xmpp_ntohs_ptr(&buf[j + 2]);
+        class_ = xmpp_ntohs_ptr(&buf[j + 2]);
         rdlength = xmpp_ntohs_ptr(&buf[j + 8]);
         j += 10;
-        if (type == MESSAGE_T_SRV && class == MESSAGE_C_IN) {
-            rr = xmpp_alloc(ctx, sizeof(*rr));
+        if (type == MESSAGE_T_SRV && class_ == MESSAGE_C_IN) {
+            rr = xmpp_alloc<resolver_srv_rr_t>(ctx, sizeof(*rr));
             rr->next = *srv_rr_list;
             rr->priority = xmpp_ntohs_ptr(&buf[j]);
             rr->weight = xmpp_ntohs_ptr(&buf[j + 2]);
@@ -588,7 +588,7 @@ struct dnsquery_header {
 struct dnsquery_question {
     char qname[1024];
     unsigned short qtype;
-    unsigned short qclass;
+    unsigned short qclass_;
 };
 
 static void netbuf_add_16bitnum(unsigned char *buf,
@@ -674,7 +674,7 @@ static void netbuf_add_dnsquery_question(unsigned char *buf,
 {
     netbuf_add_domain_name(buf, buflen, offset, question->qname);
     netbuf_add_16bitnum(buf, buflen, offset, question->qtype);
-    netbuf_add_16bitnum(buf, buflen, offset, question->qclass);
+    netbuf_add_16bitnum(buf, buflen, offset, question->qclass_);
 }
 
 static int resolver_win32_srv_lookup(xmpp_ctx_t *ctx,
@@ -705,7 +705,7 @@ static int resolver_win32_srv_lookup(xmpp_ctx_t *ctx,
 
                 while (current) {
                     if (current->wType == DNS_TYPE_SRV) {
-                        rr = xmpp_alloc(ctx, sizeof(*rr));
+                        rr = xmpp_alloc<resolver_srv_rr_t>(ctx, sizeof(*rr));
                         if (rr == NULL)
                             break;
                         rr->next = *srv_rr_list;
@@ -931,7 +931,7 @@ resolver_win32_srv_query(const char *fulldomain, unsigned char *buf, size_t len)
             memset(&question, 0, sizeof(question));
             strncpy(question.qname, fulldomain, 1024);
             question.qtype = MESSAGE_T_SRV; /* SRV */
-            question.qclass = MESSAGE_C_IN; /* INTERNET! */
+            question.qclass_ = MESSAGE_C_IN; /* INTERNET! */
 
             netbuf_add_dnsquery_question(buf, (int)len, &offset, &question);
 

@@ -39,7 +39,7 @@ xmpp_stanza_t *xmpp_stanza_new(xmpp_ctx_t *ctx)
 {
     xmpp_stanza_t *stanza;
 
-    stanza = xmpp_alloc(ctx, sizeof(xmpp_stanza_t));
+    stanza = xmpp_alloc<xmpp_stanza_t>(ctx, sizeof(xmpp_stanza_t));
     if (stanza != NULL) {
         stanza->ref = 1;
         stanza->ctx = ctx;
@@ -263,7 +263,7 @@ static char *_escape_xml(xmpp_ctx_t *ctx, char *text)
             len++;
         }
     }
-    if ((buf = xmpp_alloc(ctx, (len + 1) * sizeof(char))) == NULL)
+    if ((buf = xmpp_alloc<char>(ctx, (len + 1) * sizeof(char))) == NULL)
         return NULL; /* Error */
     dst = buf;
     for (src = text; *src != '\0'; src++) {
@@ -447,7 +447,7 @@ int xmpp_stanza_to_text(xmpp_stanza_t *stanza, char **buf, size_t *buflen)
 
     /* allocate a default sized buffer and attempt to render */
     length = 1024;
-    buffer = xmpp_alloc(stanza->ctx, length);
+    buffer = xmpp_alloc<char>(stanza->ctx, length);
     if (!buffer) {
         *buf = NULL;
         *buflen = 0;
@@ -759,7 +759,7 @@ int xmpp_stanza_set_text_with_size(xmpp_stanza_t *stanza,
 
     if (stanza->data)
         xmpp_free(stanza->ctx, stanza->data);
-    stanza->data = xmpp_alloc(stanza->ctx, size + 1);
+    stanza->data = xmpp_alloc<char>(stanza->ctx, size + 1);
     if (!stanza->data)
         return XMPP_EMEM;
 
@@ -990,7 +990,7 @@ char *xmpp_stanza_get_text(xmpp_stanza_t *stanza)
     if (len == 0)
         return NULL;
 
-    text = (char *)xmpp_alloc(stanza->ctx, len + 1);
+    text = (char *)xmpp_alloc<char>(stanza->ctx, len + 1);
     if (!text)
         return NULL;
 
@@ -1449,76 +1449,76 @@ xmpp_error_new(xmpp_ctx_t *ctx, xmpp_error_type_t type, const char *text)
     xmpp_stanza_t *error_type = xmpp_stanza_new(ctx);
 
     switch (type) {
-    case XMPP_SE_BAD_FORMAT:
+    case xmpp_error_type_t::XMPP_SE_BAD_FORMAT:
         xmpp_stanza_set_name(error_type, "bad-format");
         break;
-    case XMPP_SE_BAD_NS_PREFIX:
+    case xmpp_error_type_t::XMPP_SE_BAD_NS_PREFIX:
         xmpp_stanza_set_name(error_type, "bad-namespace-prefix");
         break;
-    case XMPP_SE_CONFLICT:
+    case xmpp_error_type_t::XMPP_SE_CONFLICT:
         xmpp_stanza_set_name(error_type, "conflict");
         break;
-    case XMPP_SE_CONN_TIMEOUT:
+    case xmpp_error_type_t::XMPP_SE_CONN_TIMEOUT:
         xmpp_stanza_set_name(error_type, "connection-timeout");
         break;
-    case XMPP_SE_HOST_GONE:
+    case xmpp_error_type_t::XMPP_SE_HOST_GONE:
         xmpp_stanza_set_name(error_type, "host-gone");
         break;
-    case XMPP_SE_HOST_UNKNOWN:
+    case xmpp_error_type_t::XMPP_SE_HOST_UNKNOWN:
         xmpp_stanza_set_name(error_type, "host-unknown");
         break;
-    case XMPP_SE_IMPROPER_ADDR:
+    case xmpp_error_type_t::XMPP_SE_IMPROPER_ADDR:
         xmpp_stanza_set_name(error_type, "improper-addressing");
         break;
-    case XMPP_SE_INTERNAL_SERVER_ERROR:
+    case xmpp_error_type_t::XMPP_SE_INTERNAL_SERVER_ERROR:
         xmpp_stanza_set_name(error_type, "internal-server-error");
         break;
-    case XMPP_SE_INVALID_FROM:
+    case xmpp_error_type_t::XMPP_SE_INVALID_FROM:
         xmpp_stanza_set_name(error_type, "invalid-from");
         break;
-    case XMPP_SE_INVALID_ID:
+    case xmpp_error_type_t::XMPP_SE_INVALID_ID:
         xmpp_stanza_set_name(error_type, "invalid-id");
         break;
-    case XMPP_SE_INVALID_NS:
+    case xmpp_error_type_t::XMPP_SE_INVALID_NS:
         xmpp_stanza_set_name(error_type, "invalid-namespace");
         break;
-    case XMPP_SE_INVALID_XML:
+    case xmpp_error_type_t::XMPP_SE_INVALID_XML:
         xmpp_stanza_set_name(error_type, "invalid-xml");
         break;
-    case XMPP_SE_NOT_AUTHORIZED:
+    case xmpp_error_type_t::XMPP_SE_NOT_AUTHORIZED:
         xmpp_stanza_set_name(error_type, "not-authorized");
         break;
-    case XMPP_SE_POLICY_VIOLATION:
+    case xmpp_error_type_t::XMPP_SE_POLICY_VIOLATION:
         xmpp_stanza_set_name(error_type, "policy-violation");
         break;
-    case XMPP_SE_REMOTE_CONN_FAILED:
+    case xmpp_error_type_t::XMPP_SE_REMOTE_CONN_FAILED:
         xmpp_stanza_set_name(error_type, "remote-connection-failed");
         break;
-    case XMPP_SE_RESOURCE_CONSTRAINT:
+    case xmpp_error_type_t::XMPP_SE_RESOURCE_CONSTRAINT:
         xmpp_stanza_set_name(error_type, "resource-constraint");
         break;
-    case XMPP_SE_RESTRICTED_XML:
+    case xmpp_error_type_t::XMPP_SE_RESTRICTED_XML:
         xmpp_stanza_set_name(error_type, "restricted-xml");
         break;
-    case XMPP_SE_SEE_OTHER_HOST:
+    case xmpp_error_type_t::XMPP_SE_SEE_OTHER_HOST:
         xmpp_stanza_set_name(error_type, "see-other-host");
         break;
-    case XMPP_SE_SYSTEM_SHUTDOWN:
+    case xmpp_error_type_t::XMPP_SE_SYSTEM_SHUTDOWN:
         xmpp_stanza_set_name(error_type, "system-shutdown");
         break;
-    case XMPP_SE_UNDEFINED_CONDITION:
+    case xmpp_error_type_t::XMPP_SE_UNDEFINED_CONDITION:
         xmpp_stanza_set_name(error_type, "undefined-condition");
         break;
-    case XMPP_SE_UNSUPPORTED_ENCODING:
+    case xmpp_error_type_t::XMPP_SE_UNSUPPORTED_ENCODING:
         xmpp_stanza_set_name(error_type, "unsupported-encoding");
         break;
-    case XMPP_SE_UNSUPPORTED_STANZA_TYPE:
+    case xmpp_error_type_t::XMPP_SE_UNSUPPORTED_STANZA_TYPE:
         xmpp_stanza_set_name(error_type, "unsupported-stanza-type");
         break;
-    case XMPP_SE_UNSUPPORTED_VERSION:
+    case xmpp_error_type_t::XMPP_SE_UNSUPPORTED_VERSION:
         xmpp_stanza_set_name(error_type, "unsupported-version");
         break;
-    case XMPP_SE_XML_NOT_WELL_FORMED:
+    case xmpp_error_type_t::XMPP_SE_XML_NOT_WELL_FORMED:
         xmpp_stanza_set_name(error_type, "xml-not-well-formed");
         break;
     default:

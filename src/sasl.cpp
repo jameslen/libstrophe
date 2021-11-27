@@ -49,7 +49,7 @@ char *sasl_plain(xmpp_ctx_t *ctx, const char *authid, const char *password)
     idlen = strlen(authid);
     passlen = strlen(password);
     msglen = 2 + idlen + passlen;
-    msg = xmpp_alloc(ctx, msglen);
+    msg = xmpp_alloc<char>(ctx, msglen);
     if (msg != NULL) {
         msg[0] = '\0';
         memcpy(msg + 1, authid, idlen);
@@ -69,7 +69,7 @@ static char *_make_string(xmpp_ctx_t *ctx, const char *s, unsigned len)
 {
     char *result;
 
-    result = xmpp_alloc(ctx, len + 1);
+    result = xmpp_alloc<char>(ctx, len + 1);
     if (result != NULL) {
         memcpy(result, s, len);
         result[len] = '\0';
@@ -83,7 +83,7 @@ static char *_make_quoted(xmpp_ctx_t *ctx, const char *s)
     char *result;
     size_t len = strlen(s);
 
-    result = xmpp_alloc(ctx, len + 3);
+    result = xmpp_alloc<char>(ctx, len + 3);
     if (result != NULL) {
         result[0] = '"';
         memcpy(result + 1, s, len);
@@ -182,7 +182,7 @@ _add_key(xmpp_ctx_t *ctx, hash_t *table, const char *key, char *buf, int quote)
 
     /* allocate a zero-length string if necessary */
     if (buf == NULL) {
-        buf = xmpp_alloc(ctx, 1);
+        buf = xmpp_alloc<char>(ctx, 1);
         buf[0] = '\0';
     }
     if (buf == NULL)
@@ -277,7 +277,7 @@ char *sasl_digest_md5(xmpp_ctx_t *ctx,
     hash_add(table, "nc", xmpp_strdup(ctx, "00000001"));
     if (hash_get(table, "qop") == NULL)
         hash_add(table, "qop", xmpp_strdup(ctx, "auth"));
-    value = xmpp_alloc(ctx, 5 + strlen(domain) + 1);
+    value = xmpp_alloc<char>(ctx, 5 + strlen(domain) + 1);
     memcpy(value, "xmpp/", 5);
     memcpy(value + 5, domain, strlen(domain));
     value[5 + strlen(domain)] = '\0';
@@ -343,7 +343,7 @@ char *sasl_digest_md5(xmpp_ctx_t *ctx,
     MD5Update(&MD5, (unsigned char *)hex, 32);
     MD5Final(digest, &MD5);
 
-    response = xmpp_alloc(ctx, 32 + 1);
+    response = xmpp_alloc<char>(ctx, 32 + 1);
     _digest_to_hex((char *)digest, hex);
     memcpy(response, hex, 32);
     response[32] = '\0';
@@ -429,14 +429,14 @@ char *sasl_scram(xmpp_ctx_t *ctx,
     ival = strtol(i, &saveptr, 10);
 
     auth_len = 10 + strlen(r) + strlen(first_bare) + strlen(challenge);
-    auth = xmpp_alloc(ctx, auth_len);
+    auth = xmpp_alloc<char>(ctx, auth_len);
     if (!auth) {
         goto out_sval;
     }
 
     /* "c=biws," + r + ",p=" + sign_b64 + '\0' */
     response_len = 7 + strlen(r) + 3 + ((alg->digest_size + 2) / 3 * 4) + 1;
-    response = xmpp_alloc(ctx, response_len);
+    response = xmpp_alloc<char>(ctx, response_len);
     if (!response) {
         goto out_auth;
     }

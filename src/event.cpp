@@ -88,7 +88,7 @@ void xmpp_run_once(xmpp_ctx_t *ctx, unsigned long timeout)
     uint64_t usec;
     int tls_read_bytes = 0;
 
-    if (ctx->loop_status == XMPP_LOOP_QUIT)
+    if (ctx->loop_status == xmpp_loop_status_t::XMPP_LOOP_QUIT)
         return;
 
     /* send queued data */
@@ -117,7 +117,7 @@ void xmpp_run_once(xmpp_ctx_t *ctx, unsigned long timeout)
         /* write all data from the send queue to the socket */
         sq = conn->send_queue_head;
         while (sq) {
-            towrite = sq->len - sq->written;
+            towrite = (int)(sq->len - sq->written);
 
             if (conn->tls) {
                 ret = tls_write(conn->tls, &sq->data[sq->written], towrite);
@@ -222,7 +222,7 @@ NEXT_ITEM:
 
     /* check for events */
     if (max > 0)
-        ret = select(max + 1, &rfds, &wfds, NULL, &tv);
+        ret = (int)select(max + 1, &rfds, &wfds, NULL, &tv);
     else {
         if (timeout > 0)
             _sleep(timeout);
@@ -280,7 +280,7 @@ NEXT_ITEM:
                     ret = parser_feed(conn->parser, buf, ret);
                     if (!ret) {
                         xmpp_debug(ctx, "xmpp", "parse error [%s]", buf);
-                        xmpp_send_error(conn, XMPP_SE_INVALID_XML,
+                        xmpp_send_error(conn, xmpp_error_type_t::XMPP_SE_INVALID_XML,
                                         "parse error");
                     }
                 } else {
@@ -326,16 +326,16 @@ NEXT_ITEM:
  */
 void xmpp_run(xmpp_ctx_t *ctx)
 {
-    if (ctx->loop_status != XMPP_LOOP_NOTSTARTED)
+    if (ctx->loop_status != xmpp_loop_status_t::XMPP_LOOP_NOTSTARTED)
         return;
 
-    ctx->loop_status = XMPP_LOOP_RUNNING;
-    while (ctx->loop_status == XMPP_LOOP_RUNNING) {
+    ctx->loop_status = xmpp_loop_status_t::XMPP_LOOP_RUNNING;
+    while (ctx->loop_status == xmpp_loop_status_t::XMPP_LOOP_RUNNING) {
         xmpp_run_once(ctx, ctx->timeout);
     }
 
     /* make it possible to start event loop again */
-    ctx->loop_status = XMPP_LOOP_NOTSTARTED;
+    ctx->loop_status = xmpp_loop_status_t::XMPP_LOOP_NOTSTARTED;
 
     xmpp_debug(ctx, "event", "Event loop completed.");
 }
@@ -352,8 +352,8 @@ void xmpp_stop(xmpp_ctx_t *ctx)
 {
     xmpp_debug(ctx, "event", "Stopping event loop.");
 
-    if (ctx->loop_status == XMPP_LOOP_RUNNING)
-        ctx->loop_status = XMPP_LOOP_QUIT;
+    if (ctx->loop_status == xmpp_loop_status_t::XMPP_LOOP_RUNNING)
+        ctx->loop_status = xmpp_loop_status_t::XMPP_LOOP_QUIT;
 }
 
 /** Set the timeout to use when calling xmpp_run().

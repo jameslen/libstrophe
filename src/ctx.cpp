@@ -203,44 +203,6 @@ static xmpp_log_t xmpp_default_log = {NULL, NULL};
 
 /* convenience functions for accessing the context */
 
-/** Allocate memory in a Strophe context.
- *  All Strophe functions will use this to allocate memory.
- *
- *  @param ctx a Strophe context object
- *  @param size the number of bytes to allocate
- *
- *  @return a pointer to the allocated memory or NULL on an error
- */
-void *xmpp_alloc(const xmpp_ctx_t *ctx, size_t size)
-{
-    return ctx->mem->alloc(size, ctx->mem->userdata);
-}
-
-/** Free memory in a Strophe context.
- *  All Strophe functions will use this to free allocated memory.
- *
- *  @param ctx a Strophe context object
- *  @param p a pointer referencing memory to be freed
- */
-void xmpp_free(const xmpp_ctx_t *ctx, void *p)
-{
-    ctx->mem->free(p, ctx->mem->userdata);
-}
-
-/** Reallocate memory in a Strophe context.
- *  All Strophe functions will use this to reallocate memory.
- *
- *  @param ctx a Strophe context object
- *  @param p a pointer to previously allocated memory
- *  @param size the new size in bytes to allocate
- *
- *  @return a pointer to the reallocated memory or NULL on an error
- */
-void *xmpp_realloc(const xmpp_ctx_t *ctx, void *p, size_t size)
-{
-    return ctx->mem->realloc(p, size, ctx->mem->userdata);
-}
-
 /** Write a log message to the logger.
  *  Write a log message to the logger for the context for the specified
  *  level and area.  This function takes a printf-style format string and a
@@ -275,7 +237,7 @@ void xmpp_log(const xmpp_ctx_t *ctx,
     va_copy(copy, ap);
     ret = xmpp_vsnprintf(smbuf, sizeof(smbuf), fmt, ap);
     if (ret >= (int)sizeof(smbuf)) {
-        buf = (char *)xmpp_alloc(ctx, ret + 1);
+        buf = xmpp_alloc<char>(ctx, ret + 1);
         if (!buf) {
             buf = NULL;
             xmpp_error(ctx, "log", "Failed allocating memory for log message.");
@@ -420,9 +382,9 @@ xmpp_ctx_t *xmpp_ctx_new(const xmpp_mem_t *mem, const xmpp_log_t *log)
     xmpp_ctx_t *ctx = NULL;
 
     if (mem == NULL)
-        ctx = xmpp_default_mem.alloc(sizeof(xmpp_ctx_t), NULL);
+        ctx = reinterpret_cast<xmpp_ctx_t*>(xmpp_default_mem.alloc(sizeof(xmpp_ctx_t), NULL));
     else
-        ctx = mem->alloc(sizeof(xmpp_ctx_t), mem->userdata);
+        ctx = reinterpret_cast<xmpp_ctx_t*>(mem->alloc(sizeof(xmpp_ctx_t), mem->userdata));
 
     if (ctx != NULL) {
         if (mem != NULL)
@@ -437,7 +399,7 @@ xmpp_ctx_t *xmpp_ctx_new(const xmpp_mem_t *mem, const xmpp_log_t *log)
 
         ctx->connlist = NULL;
         ctx->timed_handlers = NULL;
-        ctx->loop_status = XMPP_LOOP_NOTSTARTED;
+        ctx->loop_status = xmpp_loop_status_t::XMPP_LOOP_NOTSTARTED;
         ctx->rand = xmpp_rand_new(ctx);
         ctx->timeout = EVENT_LOOP_DEFAULT_TIMEOUT;
         if (ctx->rand == NULL) {

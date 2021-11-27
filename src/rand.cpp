@@ -261,7 +261,7 @@ static void xmpp_rand_reseed(xmpp_rand_t *rand)
 
 xmpp_rand_t *xmpp_rand_new(xmpp_ctx_t *ctx)
 {
-    xmpp_rand_t *out = xmpp_alloc(ctx, sizeof(*out));
+    xmpp_rand_t *out = xmpp_alloc<xmpp_rand_t>(ctx, sizeof(*out));
     if (out != NULL) {
         memset(out, 0, sizeof(*out));
     }

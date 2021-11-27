@@ -50,9 +50,9 @@ hash_t *hash_new(xmpp_ctx_t *ctx, int size, hash_free_func free_func)
 {
     hash_t *result = NULL;
 
-    result = xmpp_alloc(ctx, sizeof(hash_t));
+    result = xmpp_alloc<hash_t>(ctx, sizeof(hash_t));
     if (result != NULL) {
-        result->entries = xmpp_alloc(ctx, size * sizeof(hashentry_t *));
+        result->entries = xmpp_alloc<hashentry_t*>(ctx, size * sizeof(hashentry_t *));
         if (result->entries == NULL) {
             xmpp_free(ctx, result);
             return NULL;
@@ -153,7 +153,7 @@ int hash_add(hash_t *table, const char *key, void *data)
 
     if (entry == NULL) {
         /* allocate and fill a new entry */
-        entry = xmpp_alloc(ctx, sizeof(hashentry_t));
+        entry = xmpp_alloc<hashentry_t>(ctx, sizeof(hashentry_t));
         if (!entry)
             return -1;
         entry->key = xmpp_strdup(ctx, key);
@@ -228,7 +228,7 @@ hash_iterator_t *hash_iter_new(hash_t *table)
     xmpp_ctx_t *ctx = table->ctx;
     hash_iterator_t *iter;
 
-    iter = xmpp_alloc(ctx, sizeof(*iter));
+    iter = xmpp_alloc<hash_iterator_t>(ctx, sizeof(*iter));
     if (iter != NULL) {
         iter->ref = 1;
         iter->table = hash_clone(table);

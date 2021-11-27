@@ -103,9 +103,9 @@ const char *xmpp_tlscert_get_dnsname(const xmpp_tlscert_t *cert, size_t n)
 const char *xmpp_tlscert_get_string(const xmpp_tlscert_t *cert,
                                     xmpp_cert_element_t elmnt)
 {
-    if (elmnt >= XMPP_CERT_ELEMENT_MAX)
+    if (elmnt >= xmpp_cert_element_t::XMPP_CERT_ELEMENT_MAX)
         return NULL;
-    return cert->elements[elmnt];
+    return cert->elements[static_cast<size_t>(elmnt)];
 }
 
 /** Get a descriptive string for each xmpp_cert_element_t.
@@ -133,9 +133,9 @@ const char *xmpp_tlscert_get_description(xmpp_cert_element_t elmnt)
         "Fingerprint SHA-1",
         "Fingerprint SHA-256",
     };
-    if (elmnt >= XMPP_CERT_ELEMENT_MAX)
+    if (elmnt >= xmpp_cert_element_t::XMPP_CERT_ELEMENT_MAX)
         return NULL;
-    return descriptions[elmnt];
+    return descriptions[static_cast<size_t>(elmnt)];
 }
 
 /** Allocate and initialize a Strophe TLS certificate object.
@@ -146,12 +146,12 @@ const char *xmpp_tlscert_get_description(xmpp_cert_element_t elmnt)
  */
 xmpp_tlscert_t *tlscert_new(xmpp_ctx_t *ctx)
 {
-    xmpp_tlscert_t *tlscert = xmpp_alloc(ctx, sizeof(*tlscert));
+    xmpp_tlscert_t *tlscert = xmpp_alloc<xmpp_tlscert_t>(ctx, sizeof(*tlscert));
     if (!tlscert)
         return NULL;
     memset(tlscert, 0, sizeof(*tlscert));
 
-    tlscert->dnsnames = xmpp_alloc(ctx, sizeof(*tlscert->dnsnames));
+    tlscert->dnsnames = xmpp_alloc<dnsname_t>(ctx, sizeof(*tlscert->dnsnames));
     if (!tlscert->dnsnames) {
         xmpp_free(ctx, tlscert);
         return NULL;

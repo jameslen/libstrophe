@@ -31,65 +31,25 @@
 
 /** handlers **/
 
-typedef struct _xmpp_handlist_t xmpp_handlist_t;
-struct _xmpp_handlist_t {
-    /* common members */
-    int user_handler;
-    int (*handler)();
-    void *userdata;
-    int enabled; /* handlers are added disabled and enabled after the
-                  * handler chain is processed to prevent stanzas from
-                  * getting processed by newly added handlers */
-    xmpp_handlist_t *next;
 
-    union {
-        /* timed handlers */
-        struct {
-            unsigned long period;
-            uint64_t last_stamp;
-        };
-        /* id handlers */
-        struct {
-            char *id;
-        };
-        /* normal handlers */
-        struct {
-            char *ns;
-            char *name;
-            char *type;
-        };
-    } u;
-};
 
 /** run-time context **/
 
-typedef enum {
-    XMPP_LOOP_NOTSTARTED,
-    XMPP_LOOP_RUNNING,
-    XMPP_LOOP_QUIT
-} xmpp_loop_status_t;
 
-typedef struct _xmpp_connlist_t {
-    xmpp_conn_t *conn;
-    struct _xmpp_connlist_t *next;
-} xmpp_connlist_t;
-
-struct _xmpp_ctx_t {
-    const xmpp_mem_t *mem;
-    const xmpp_log_t *log;
-    int verbosity;
-
-    xmpp_rand_t *rand;
-    xmpp_loop_status_t loop_status;
-    xmpp_connlist_t *connlist;
-    xmpp_handlist_t *timed_handlers;
-
-    unsigned long timeout;
-};
 
 /* convenience functions for accessing the context */
-void *xmpp_alloc(const xmpp_ctx_t *ctx, size_t size);
-void *xmpp_realloc(const xmpp_ctx_t *ctx, void *p, size_t size);
+template <typename T>
+T *xmpp_alloc(const xmpp_ctx_t *ctx, size_t size)
+{
+    return reinterpret_cast<T*>(ctx->mem->alloc(size, ctx->mem->userdata));
+}
+
+template <typename T>
+T* xmpp_realloc(const xmpp_ctx_t* ctx, T* p, size_t size)
+{
+    return reinterpret_cast<T*>(ctx->mem->realloc(p, size, ctx->mem->userdata));
+}
+
 char *xmpp_strdup(const xmpp_ctx_t *ctx, const char *s);
 char *xmpp_strndup(const xmpp_ctx_t *ctx, const char *s, size_t len);
 
