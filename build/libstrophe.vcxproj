@@ -43,6 +43,9 @@
     <ClCompile Include="..\src\tls_schannel.cpp" />
     <ClCompile Include="..\src\util.cpp" />
     <ClCompile Include="..\src\uuid.cpp" />
+    <ClCompile Include="strophe.ixx" />
+    <ClCompile Include="xmpp_connection.ixx" />
+    <ClCompile Include="xmpp_context.ixx" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\common.h" />
@@ -139,6 +142,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -156,6 +160,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>

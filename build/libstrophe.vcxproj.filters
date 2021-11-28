@@ -90,6 +90,15 @@
     <ClCompile Include="..\src\uuid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="strophe.ixx">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="xmpp_context.ixx">
+      <Filter>public</Filter>
+    </ClCompile>
+    <ClCompile Include="xmpp_connection.ixx">
+      <Filter>public</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\common.h">

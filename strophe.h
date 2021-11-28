@@ -123,6 +123,7 @@ typedef struct _xmpp_stanza_t xmpp_stanza_t;
 enum class xmpp_loop_status_t {
     XMPP_LOOP_NOTSTARTED,
     XMPP_LOOP_RUNNING,
+    XMPP_LOOP_RUNNING,
     XMPP_LOOP_QUIT
 };
 
