@@ -1,6 +1,7 @@
 export module strophe.connection;
 
 import strophe.context;
+import strophe.stanza;
 
 import <chrono>;
 import <memory>;
@@ -17,17 +18,32 @@ namespace xmpp
         component
     };
 
+    export enum class connection_flags : uint32_t
+    {
+        disable_tls   = (1 << 0),
+        mandatory_tls = (1 << 1),
+        legacy_ssl    = (1 << 2),
+    };
+
     struct tlscert_t;
     class connection;
 
     export using certfail_handler = int (*)(const tlscert_t *cert,
                                             std::string_view errormsg);
     export using conn_handler = void (*)(
-                                    connection *conn,
-                                    connection_event_t event,
-                                    int error,
-                                    stream_error_t *stream_error,
-                                    void *userdata);
+        connection *conn,
+        connection_event_t event,
+        int error,
+        stream_error_t *stream_error,
+        void *userdata
+    );
+
+    // TODO: name this better
+    export using data_handler = bool (*)(
+        connection *conn,
+        std::shared_ptr<stanza> data,
+        void *userdata
+    );
 
     export class connection
     {
@@ -42,8 +58,8 @@ namespace xmpp
         connection &operator=(const connection&) = delete;
         connection &operator=(connection&&) = delete;
 
-        uint32_t get_flags() const;
-        bool set_flags(uint32_t flags);
+        connection_flags get_flags() const;
+        bool set_flags(connection_flags flags);
 
         void set_jid(std::string_view jid);
         std::string_view get_jid() const;
@@ -107,12 +123,36 @@ namespace xmpp
 
         void disconnect();
 
-        void send(stanza_t *stanza);
+        void send(std::shared_ptr<stanza> data);
 
         void send_error(error_type_t type, char *text);
 
         void send_raw_string(const char *fmt, ...);
         void send_raw(std::span<std::byte> data);
+
+        void handler_add(
+              data_handler handler,
+              const char *ns,
+              const char *name,
+              const char *type,
+              void *userdata
+        );
+        
+        void handler_delete(
+            data_handler handler
+        );
+
+        void id_handler_add(
+            data_handler handler,
+            const char *id,
+            void *userdata
+        );
+
+        void id_handler_delete(
+            data_handler handler,
+            const char *id
+        );
+
     private:
         std::pmr::memory_resource* m_allocator;
         context* m_context;

@@ -46,6 +46,8 @@
     <ClCompile Include="strophe.ixx" />
     <ClCompile Include="xmpp_connection.ixx" />
     <ClCompile Include="xmpp_context.ixx" />
+    <ClCompile Include="xmpp_stanza.ixx" />
+    <ClCompile Include="xmpp_utilities.ixx" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\common.h" />
